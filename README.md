@@ -1,10 +1,12 @@
 # Grapher + Vue
 
-This package makes using [Grapher](http://grapher.cultofcoders.com/) with [Vue](https://vuejs.org/) in [Meteor](https://www.meteor.com/) easy. It automatically subscribes to your queries when the component is loaded, and unsubscribes to them when they are destroyed.
+This package makes using [Grapher](http://grapher.cultofcoders.com/) with [Vue](https://vuejs.org/) in [Meteor](https://www.meteor.com/) easy. It automatically subscribes to your queries when the component is loaded, and unsubscribes to them when the component is destroyed.
 
-If you want to fetch your data nonreactively "Method style", just add `subscribe:false`. No need for a callback though. It will first return an object `{ready:false,data:[]}`, and once it finishes, the object will be updated with the results, using the same structure as the subscription version.
+Query paramaters are reactive, using Vue's reactivity. If you for example use `this.limit` in your query, and `this.limit` changes, it will update the query and subscription. If you want to turn this off, add `reactive:false`.
 
-It also supports reactive query paramaters, using Vue's reactivity. So if you for example call `this.limit` in your query, and `this.limit` changes, it will update the query and subscription. If you want to turn this off, add `reactive:false`.
+You can also fetch data nonreactively, by adding `subscribe:false`. It uses the same result structure as the subscribe version. It will first return an object `{ready:false,data:[]}`. Once it finishes, the object will be updated with the results.
+
+If you add `single:true`, it will work like `fetchOne()`, and `data` will be a single object instead of an Array. When using `single:true`, `limit:1` is added automatically.
 
 ## Installation
 ```
@@ -40,13 +42,14 @@ Vue.use(GrapherVue)
       users(){
         return {
           collection:Meteor.users,
-          query:{
+          query:{ //These are the paramaters passed to collection.createQuery()
             username:1,
             profile:1,
             $options:{limit:this.limit}
           },
-          subscribe:true, //default
-          reactive:true //default
+          subscribe:true, //optional, default is true
+          reactive:true,  //optional, default is true
+          single:false    //optional, default is false
         }
       }
     }
