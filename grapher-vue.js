@@ -3,21 +3,26 @@ export default {
 		Vue.mixin({
 			beforeCreate(){
 				this._grapher = {}
-			},
-			created(){
-				if(this.$options.grapher){
-					_.each(this.$options.grapher, (fn, name) => {
-						this.$data[name] = { //Initial "dummy result"
+				_.each(this.$options.grapher, (fn, name) => {
+						this[name] = { //Initial "dummy result"
 							ready:false,
 							readyOnce:false,
 							data:[]
 						}
 						Vue.util.defineReactive(this, name, null)
+				})
+			},
+			created(){
+				if(this.$options.grapher){
+					_.each(this.$options.grapher, (fn, name) => {
 						let computation
 						let readyOnce = false
 						let nonreactive
 						//Run this function once, and every time the query parameters change
 						let unwatch = this.$watch(fn, params => {
+							if(typeof params !== 'object'){
+								throw new Error('Parameters must be an object')
+							}
 							nonreactive = params.reactive === false
 							let start = new Date(), time
 							if(!this._grapher[name]){ //Create the query
@@ -37,16 +42,19 @@ export default {
 									query.unsubscribe()
 								}
 								this[name].ready = false 
-								query[params.single ? 'fetchOne' : 'fetch']((err,res) => {
+								query.fetch((err,data) => {
 									if(err){
 										console.err(err)
 									} else {
+										if(params.single){
+											data = data[0]
+										}
 										this[name] = {
 											ready:true,
 											readyOnce:true,
-											count:params.single ? undefined : res.length,
+											count:params.single ? undefined : data.length,
 											time:new Date() - start,
-											data:res
+											data:data
 										}
 									}
 								})
@@ -55,11 +63,16 @@ export default {
 								query.subscribe()
 								if(oldSub){
 									oldSub.stop()
+								} else { //Handle switching from method-based
+									readyOnce = false
 								}
 								if(computation){
 									this.$stopHandle(computation)
 								}
 								computation = this.$autorun(()=>{
+									if(!query.subscriptionHandle){
+										return
+									}									
 									let ready = query.subscriptionHandle.ready()
 									if(ready && !readyOnce){
 										readyOnce = true
@@ -67,7 +80,10 @@ export default {
 									if(ready && !time){
 										time = new Date() - start
 									}
-									let data = query[params.single ? 'fetchOne' : 'fetch']()
+									let data = query.fetch()
+									if(params.single){
+										data = data[0]
+									}
 									this[name] = Object.freeze({
 										ready:ready,
 										readyOnce:readyOnce,

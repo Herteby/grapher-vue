@@ -66,5 +66,5 @@ The object that is returned ("users" in the example) looks like this:
   data: Array //The result of the query
 }
 ```
-## Example project
+## Demo
 [Clone my testing respository](https://github.com/Herteby/testing). It's a Meteor project with some test data and everything set up.
