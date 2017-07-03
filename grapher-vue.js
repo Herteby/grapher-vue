@@ -4,12 +4,11 @@ export default {
 			beforeCreate(){
 				this._grapher = {}
 				_.each(this.$options.grapher, (fn, name) => {
-						this[name] = { //Initial "dummy result"
-							ready:false,
-							readyOnce:false,
-							data:[]
-						}
-						Vue.util.defineReactive(this, name, null)
+					Vue.util.defineReactive(this, name, { //Initial "dummy result"
+						ready:false,
+						readyOnce:false,
+						data:[]
+					})
 				})
 			},
 			created(){
