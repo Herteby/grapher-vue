@@ -1,3 +1,4 @@
+//in need of refactoring 😓
 export default {
 	install(Vue, options){
 		Vue.mixin({
@@ -29,12 +30,22 @@ export default {
 							}
 							let query = this._grapher[name]
 							query.body = params.query
+
+							if(params.countOnly){
+								this[name] = false
+								query.getCount((err, count) => {
+									this[name] = count
+								})
+								return
+							}
+
 							if(params.single){
 								if(!query.body.$options){
 									query.body.$options = {}
 								}
 								query.body.$options.limit = 1
 							}
+
 							if(params.subscribe === false){ //"Method style" fetch
 								if(query.subscriptionHandle){ //Handle switching from subscription-based
 									this.$stopHandle(computation)
@@ -48,13 +59,17 @@ export default {
 										if(params.single){
 											data = data[0]
 										}
-										this[name] = {
+										let result = {
 											ready:true,
 											readyOnce:true,
 											count:params.single ? undefined : data.length,
 											time:new Date() - start,
 											data:data
 										}
+										if(params.fullCount){
+											result.fullCount = false
+										}
+										this[name] = result
 									}
 								})
 							} else { //Subscribe and fetch
@@ -83,13 +98,23 @@ export default {
 									if(params.single){
 										data = data[0]
 									}
-									this[name] = Object.freeze({
+									let result = {
 										ready:ready,
 										readyOnce:readyOnce,
 										count:params.single ? undefined : data.length,
 										time:time,
-										data:data
-									})
+										data:data,
+									}
+									if(params.fullCount){
+										result.fullCount = this[name].fullCount || false
+									}
+									this[name] = result
+								})
+							}
+
+							if(params.fullCount){
+								query.getCount((err, count) => {
+									this.$set(this[name], 'fullCount', count)
 								})
 							}
 						},{immediate:true})

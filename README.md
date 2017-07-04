@@ -1,26 +1,23 @@
 # Grapher + Vue
 
-This package makes using [Grapher](http://grapher.cultofcoders.com/) with [Vue](https://vuejs.org/) in [Meteor](https://www.meteor.com/) easy. It automatically subscribes to your queries when the component is loaded, and unsubscribes to them when the component is destroyed.
+This package makes using [Grapher](http://grapher.cultofcoders.com/) with [Vue](https://vuejs.org/) in [Meteor](https://www.meteor.com/) easier and more declarative.
 
-Query paramaters are reactive, using Vue's reactivity. If you for example use `this.limit` in your query, and `this.limit` changes, it will update the query and subscription. If you want to turn this off, add `reactive:false`.
+It automatically subscribes to your queries when the component is loaded, and unsubscribes to them when the component is destroyed.
 
-You can also fetch data nonreactively, by adding `subscribe:false`. It uses the same result structure as the subscribe version. It will first return an object `{ready:false,data:[]}`. Once it finishes, the object will be updated with the results.
+Query parameters are reactive by default, using Vue's reactivity. So if you for example use `this.limit` in your query, it will update the query and subscription when `this.limit` changes.
 
-If you add `single:true`, it will work like `fetchOne()`, and `data` will be a single object instead of an Array. When using `single:true`, `limit:1` is added automatically.
-
-## Installation
+## Setup
 ```
 meteor add herteby:grapher-vue
 ```
-## Setup
 ```javascript
 import GrapherVue from 'meteor/herteby:grapher-vue'
 Vue.use(GrapherVue)
 ```
-## Usage
+## Example
 ```vue
 <template>
-  <div v-if="users.ready">
+  <div v-if="users.readyOnce">
     Users: {{users.count}}<br>
     Time taken: {{users.time}}ms
     <div v-for="user in users.data">
@@ -42,29 +39,107 @@ Vue.use(GrapherVue)
       users(){
         return {
           collection:Meteor.users,
-          query:{ //These are the paramaters passed to collection.createQuery()
+          query:{
             username:1,
             profile:1,
             $options:{limit:this.limit}
-          },
-          subscribe:true, //optional, default is true
-          reactive:true,  //optional, default is true
-          single:false    //optional, default is false
+          }
         }
       }
     }
   }
 </script>
 ```
-The object that is returned ("users" in the example) looks like this:
-```javascript
-{
-  ready: Boolean, //Wether the subscription has finished fetching all documents
-  readyOnce: Boolean, //Unlike ready, this will remain true even if the subscription is later changed
-  count: Number, //Number of results
-  time: Number, //How many milliseconds it took until it was ready
-  data: Array //The result of the query
-}
-```
+## API
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Type</th>
+    <th>Required/Default</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>Mongo.Collection</td>
+    <td>Required</td>
+    <td>The root collection for the query</td>
+  </tr>
+  <tr>
+    <td>query</td>
+    <td>Object</td>
+    <td>Required</td>
+    <td>Argument for Grapher's <a href="http://grapher.cultofcoders.com/api/query.html#Collection-createQuery">createQuery()</a></td>
+  </tr>
+  <tr>
+    <td>subscribe</td>
+    <td>Boolean</td>
+    <td>Defaults to <i>true</i></td>
+    <td>If set to false, uses a method call instead. The result structure is the same regardless</td>
+  </tr>
+  <tr>
+    <td>reactive</td>
+    <td>Boolean</td>
+    <td>Defaults to <i>true</i></td>
+    <td>Wether the query should update when Vue variables it depends on change.</td>
+  </tr>
+  <tr>
+    <td>single</td>
+    <td>Boolean</td>
+    <td>Defaults to <i>false</i></td>
+    <td>If set to true, it will work like fetchOne(), and adds `limit:1` to the query.</td>
+  </tr>
+  <tr>
+    <td>fullCount</td>
+    <td>Boolean</td>
+    <td>Defaults to <i>false</i></td>
+    <td>If true, <a href="http://grapher.cultofcoders.com/api/query.html#Query-getCount">getCount()</a> will called to fetch the full count from the server. Useful if you have set a limit on the query</td>
+  </tr>
+  <tr>
+    <td>countOnly</td>
+    <td>Boolean</td>
+    <td>Defaults to <i>false</i></td>
+    <td>If true, only <a href="http://grapher.cultofcoders.com/api/query.html#Query-getCount">getCount()</a> will be called, and no data will be fetched. Useful for notification badges and such. Instead of the normal format, the result will simply be <i>false</i> initially, and then when call returns, a Number representing the count.</td>
+  </tr>
+</table>
+
+## Result
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>data</td>
+    <td>Array or Object</td>
+    <td>The result of the query, obtained from <a href="http://grapher.cultofcoders.com/api/query.html#Query-fetch">Query.fetch()</a><br>If single:true was set, it will instead be a single object.</td>
+  </tr>
+  <tr>
+    <td>ready</td>
+    <td>Boolean</td>
+    <td>Wether the subscription has finished fetching all documents</td>
+  </tr>
+  <tr>
+    <td>readyOnce</td>
+    <td>Boolean</td>
+    <td>Unlike ready, this will remain true if the subscription is later changed (useful for loading indicators)</td>
+  </tr>
+  <tr>
+    <td>count</td>
+    <td>Number</td>
+    <td>Number of results</td>
+  </tr>
+  <tr>
+    <td>fullCount</td>
+    <td>Number or false</td>
+    <td>Only available if you set fullCount or countOnly to true.<br>This will initially be set to false. Once the getCount() server call returns, this will be updated with the count</td>
+  </tr>
+  <tr>
+    <td>time</td>
+    <td>Number</td>
+    <td>How many milliseconds it took to fetch all the data</td>
+  </tr>
+</table>
+
 ## Demo
-[Clone my testing respository](https://github.com/Herteby/testing). It's a Meteor project with some test data and everything set up.
+There's a live demo [here](https://dev.herte.by/), or you can [clone my testing repo](https://github.com/Herteby/testing).
