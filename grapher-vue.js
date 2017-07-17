@@ -4,7 +4,8 @@ export default {
 		Vue.mixin({
 			beforeCreate(){
 				this._grapher = {}
-				_.each(this.$options.grapher, (fn, name) => {
+				let args = typeof this.$options.grapher == 'function' ? this.$options.grapher() : this.$options.grapher
+				_.each(args, (fn, name) => {
 					Vue.util.defineReactive(this, name, { //Initial "dummy result"
 						ready:false,
 						readyOnce:false,
@@ -14,7 +15,8 @@ export default {
 			},
 			created(){
 				if(this.$options.grapher){
-					_.each(this.$options.grapher, (fn, name) => {
+					let args = typeof this.$options.grapher == 'function' ? this.$options.grapher() : this.$options.grapher
+					_.each(args, (fn, name) => {
 						let computation
 						let readyOnce = false
 						let nonreactive
@@ -52,7 +54,7 @@ export default {
 									query.unsubscribe()
 								}
 								this[name].ready = false 
-								query.fetch((err,data) => {
+								query.fetch((err, data) => {
 									if(err){
 										console.err(err)
 									} else {
@@ -117,7 +119,7 @@ export default {
 									this.$set(this[name], 'fullCount', count)
 								})
 							}
-						},{immediate:true})
+						}, {immediate:true})
 						if(nonreactive){
 							unwatch() //stop the watcher after the first run if the user specified reactive:false
 						}
