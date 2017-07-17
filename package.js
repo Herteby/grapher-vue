@@ -1,6 +1,6 @@
 Package.describe({
   name: 'herteby:grapher-vue',
-  version: '0.4.3',
+  version: '0.5.0',
   summary: 'Integrates Vue and Grapher in an easy-to-use way',
   git: 'https://github.com/Herteby/grapher-vue',
   documentation: 'README.md'

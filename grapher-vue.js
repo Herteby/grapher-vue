@@ -41,10 +41,14 @@ export default {
 							}
 
 							if(params.single){
-								if(!query.body.$options){
+								if(!query.body.$options)
 									query.body.$options = {}
-								}
 								query.body.$options.limit = 1
+								if(typeof params.single == 'string'){
+									if(!query.body.$filters)
+										query.body.$filters = {}
+									query.body.$filters._id = params.single
+								}
 							}
 
 							if(params.subscribe === false){ //"Method style" fetch
