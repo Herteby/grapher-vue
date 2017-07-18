@@ -15,7 +15,8 @@ export default {
 			},
 			created(){
 				if(this.$options.grapher){
-					_.each(this.$options.grapher, (fn, name) => {
+					let args = typeof this.$options.grapher == 'function' ? this.$options.grapher() : this.$options.grapher
+					_.each(args, (fn, name) => {
 						let computation
 						let readyOnce = false
 						let nonreactive

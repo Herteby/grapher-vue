@@ -86,7 +86,7 @@ Vue.use(GrapherVue)
     <td>single</td>
     <td>Boolean or String</td>
     <td>Defaults to <i>false</i></td>
-    <td>If set to true, it will work like fetchOne(), and adds `$options:{limit:1}` to the query. If a String, it also adds `$filters:{_id:<string>}`</td>
+    <td>If set to true, it will work like <code>fetchOne()</code>, and adds <code>$options:{limit:1}</code> to the query. If a String, it also adds <code>$filters:{_id:theString}</code></td>
   </tr>
   <tr>
     <td>fullCount</td>
