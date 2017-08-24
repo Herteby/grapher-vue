@@ -1,4 +1,3 @@
-//in need of refactoring 😓
 export default {
 	install(Vue, options){
 		Vue.mixin({
@@ -6,11 +5,7 @@ export default {
 				this._grapher = {}
 				let args = typeof this.$options.grapher == 'function' ? this.$options.grapher() : this.$options.grapher
 				_.each(args, (fn, name) => {
-					Vue.util.defineReactive(this, name, { //Initial "dummy result"
-						ready:false,
-						readyOnce:false,
-						data:[]
-					})
+					Vue.util.defineReactive(this, name, {}) //Initial "dummy result"
 				})
 			},
 			created(){
@@ -31,7 +26,7 @@ export default {
 								this._grapher[name] = params.collection.createQuery(params.query)
 							}
 							let query = this._grapher[name]
-							query.body = params.query
+							query.body = _.cloneDeep(params.query)
 
 							if(params.countOnly){
 								this[name] = false
@@ -42,12 +37,14 @@ export default {
 							}
 
 							if(params.single){
-								if(!query.body.$options)
+								if(!query.body.$options){
 									query.body.$options = {}
+								}
 								query.body.$options.limit = 1
 								if(typeof params.single == 'string'){
-									if(!query.body.$filters)
+									if(!query.body.$filters){
 										query.body.$filters = {}
+									}
 									query.body.$filters._id = params.single
 								}
 							}
@@ -57,30 +54,31 @@ export default {
 									this.$stopHandle(computation)
 									query.unsubscribe()
 								}
-								this[name].ready = false 
-								query.fetch((err, data) => {
+								this[name].$ready = false 
+								query.fetch((err, result) => {
 									if(err){
 										console.err(err)
 									} else {
 										if(params.single){
-											data = data[0]
+											result = result[0]
 										}
-										let result = {
-											ready:true,
-											readyOnce:true,
-											count:params.single ? undefined : data.length,
-											time:new Date() - start,
-											data:data
-										}
+										_.extend(result, {
+											$ready:true,
+											$readyOnce:true,
+											$count:params.single ? undefined : result.length,
+											$time:new Date() - start,
+										})
 										if(params.fullCount){
-											result.fullCount = false
+											result.$fullCount = false
 										}
 										this[name] = result
 									}
 								})
 							} else { //Subscribe and fetch
 								let oldSub = query.subscriptionHandle
-								query.subscribe()
+								if(!params.disabled){
+									query.subscribe()
+								}
 								if(oldSub){
 									oldSub.stop()
 								} else { //Handle switching from method-based
@@ -88,6 +86,10 @@ export default {
 								}
 								if(computation){
 									this.$stopHandle(computation)
+								}
+								if(params.disabled){
+									this[name] = _.extend([], {$disabled:true, $ready:false})
+									return
 								}
 								computation = this.$autorun(()=>{
 									if(!query.subscriptionHandle){
@@ -100,19 +102,18 @@ export default {
 									if(ready && !time){
 										time = new Date() - start
 									}
-									let data = query.fetch()
+									let result = query.fetch()
 									if(params.single){
-										data = data[0]
+										result = result[0]
 									}
-									let result = {
-										ready:ready,
-										readyOnce:readyOnce,
-										count:params.single ? undefined : data.length,
-										time:time,
-										data:data,
-									}
+									_.extend(result, {
+										$ready:ready,
+										$readyOnce:readyOnce,
+										$count:params.single ? undefined : result.length,
+										$time:time,
+									})
 									if(params.fullCount){
-										result.fullCount = this[name].fullCount || false
+										result.$fullCount = this[name].fullCount || false
 									}
 									this[name] = result
 								})
