@@ -4,7 +4,7 @@ This package makes using [Grapher](http://grapher.cultofcoders.com/) with [Vue](
 
 It automatically subscribes to your queries when the component is loaded, and unsubscribes to them when the component is destroyed.
 
-Query parameters are reactive by default, using Vue's reactivity. So if you for example use `this.limit` in your query, it will update the query and subscription when `this.limit` changes.
+Query parameters are reactive, using Vue's reactivity. So if you for example use `this.limit` in your query, it will update the query and subscription when `this.limit` changes. If you use @mitar's [fork of Tracker](https://github.com/meteor-vue/tracker), it will also watch reactive Meteor variables.
 
 **BREAKING CHANGE:** Beginning with 1.0, instead of the result being in `result.data`, the result is the root object, and the extra properties are prefixed with `$`.
 
@@ -97,22 +97,16 @@ Vue.use(GrapherVue)
     <td>If true, <a href="http://grapher.cultofcoders.com/api/query.html#Query-getCount">getCount()</a> will be called to fetch the full count from the server. Useful if you have set a limit on the query</td>
   </tr>
   <tr>
-    <td>disabled</td>
-    <td>Boolean</td>
-    <td>Defaults to <i>false</i></td>
-    <td>Disable the query. Use with a reactive Vue variable if you for example want to wait for the user to input a search string, or select which document to show</td>
-  </tr>
-  <tr>
     <td>countOnly</td>
     <td>Boolean</td>
     <td>Defaults to <i>false</i></td>
     <td>If true, only <a href="http://grapher.cultofcoders.com/api/query.html#Query-getCount">getCount()</a> will be called, and no data will be fetched. Useful for notification badges and such. Instead of the normal format, the result will simply be <i>false</i> initially, and then when getCount() returns, a Number representing the count.</td>
   </tr>
   <tr>
-    <td>reactive</td>
+    <td>disabled</td>
     <td>Boolean</td>
-    <td>Defaults to <i>true</i></td>
-    <td>Wether the query should update when Vue variables it depends on change.</td>
+    <td>Defaults to <i>false</i></td>
+    <td>Disable the query. Use with a reactive Vue variable if you for example want to wait for the user to input a search string, or select which document to show</td>
   </tr>
 </table>
 

@@ -14,13 +14,11 @@ export default {
 					_.each(args, (fn, name) => {
 						let computation
 						let readyOnce = false
-						let nonreactive
 						//Run this function once, and every time the query parameters change
-						let unwatch = this.$watch(fn, params => {
+						this.$watch(fn, params => {
 							if(typeof params !== 'object'){
 								throw new Error('Parameters must be an object')
 							}
-							nonreactive = params.reactive === false
 							let start = new Date(), time
 							if(!this._grapher[name]){ //Create the query
 								this._grapher[name] = params.collection.createQuery(params.query)
@@ -125,9 +123,6 @@ export default {
 								})
 							}
 						}, {immediate:true})
-						if(nonreactive){
-							unwatch() //stop the watcher after the first run if the user specified reactive:false
-						}
 					})
 				}
 			},
