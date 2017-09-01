@@ -26,7 +26,7 @@ Vue.use(GrapherVue)
       <h4>{{user.username}}</h4>
       <pre>{{user.profile}}</pre>
     </div>
-    <button v-if="users.$count < users.$fullCount" @click="this.limit += 20">Load more</button>
+    <button v-if="users.$count < users.$fullCount" @click="limit += 20">Load more</button>
   </div>
   <div v-else>Loading...</div>
 </template>
