@@ -67,7 +67,8 @@ export default {
 											$time:new Date() - start,
 										})
 										if(params.fullCount){
-											result.$fullCount = false
+											result.$fullCount = _.has(this[name], '$fullCount') ? this[name].$fullCount : false
+											console.log(result.$fullCount)
 										}
 										this[name] = result
 									}
@@ -111,7 +112,7 @@ export default {
 										$time:time,
 									})
 									if(params.fullCount){
-										result.$fullCount = this[name].fullCount || false
+										result.$fullCount = _.has(this[name], '$fullCount') ? this[name].$fullCount : false
 									}
 									this[name] = result
 								})
@@ -119,7 +120,8 @@ export default {
 
 							if(params.fullCount){
 								query.getCount((err, count) => {
-									this.$set(this[name], 'fullCount', count)
+									this[name].$fullCount = count
+									this[name].splice(0, 0) //trigger change detection
 								})
 							}
 						}, {immediate:true})
