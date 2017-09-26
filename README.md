@@ -4,7 +4,7 @@ This package makes using [Grapher](http://grapher.cultofcoders.com/) with [Vue](
 
 It automatically subscribes to your queries when the component is loaded, and unsubscribes to them when the component is destroyed.
 
-Query parameters are reactive, using Vue's reactivity. So if you for example use `this.limit` in your query, it will update the query and subscription when `this.limit` changes. If you use @mitar's [fork of Tracker](https://github.com/meteor-vue/tracker), it will also watch reactive Meteor variables.
+Query parameters are reactive, using Vue's reactivity. So if you for example use `this.limit` in your query, it will update the query and subscription when `this.limit` changes. If you use @mitar's [fork of Tracker](https://github.com/meteor-vue/tracker), it will also respond to reactive Meteor variables.
 
 **BREAKING CHANGE:** Beginning with 1.0, instead of the result being in `result.data`, the result is the root object, and the extra properties are prefixed with `$`.
 
@@ -26,7 +26,7 @@ Vue.use(GrapherVue)
       <h4>{{user.username}}</h4>
       <pre>{{user.profile}}</pre>
     </div>
-    <button v-if="users.$count < users.$fullCount" @click="this.limit += 20">Load more</button>
+    <button v-if="users.$count < users.$fullCount" @click="limit += 20">Load more</button>
   </div>
   <div v-else>Loading...</div>
 </template>
