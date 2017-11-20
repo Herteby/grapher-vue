@@ -15,5 +15,6 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	"vue-meteor-tracker": "1.2.3"
+	"vue-meteor-tracker": "1.2.3",
+	"lodash": "4.17.4",
 })
