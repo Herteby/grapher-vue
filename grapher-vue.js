@@ -1,4 +1,5 @@
-const _ = require('lodash')
+const _ = require('lodash');
+
 export default {
 	install(Vue, options){
 		Vue.mixin({
