@@ -1,14 +1,20 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
+    "lodash": {
+      "version": "4.17.4",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz",
+      "integrity": "sha1-eCA6TRwyiuHYbcpkYONptX9AVa4="
+    },
     "lodash.omit": {
       "version": "4.5.0",
       "resolved": "https://registry.npmjs.org/lodash.omit/-/lodash.omit-4.5.0.tgz",
-      "from": "lodash.omit@>=4.5.0 <5.0.0"
+      "integrity": "sha1-brGa5aHuHdnfC5aeZs4Lf6MLXmA="
     },
     "vue-meteor-tracker": {
       "version": "1.2.3",
       "resolved": "https://registry.npmjs.org/vue-meteor-tracker/-/vue-meteor-tracker-1.2.3.tgz",
-      "from": "vue-meteor-tracker@1.2.3"
+      "integrity": "sha1-7wiuyVbC+mwjFFuufw8oFIDtsFA="
     }
   }
 }
