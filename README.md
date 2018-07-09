@@ -54,8 +54,6 @@ Vue.use(GrapherVue)
   }
 </script>
 ```
-[Live demo](https://dev.herte.by/)
-
 [Demo repo](https://github.com/Herteby/testing)
 
 ## API
